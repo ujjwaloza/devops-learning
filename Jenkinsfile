@@ -1,27 +1,31 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:18-alpine'
+            args '-u root'
+        }
+    }
 
     stages {
-        stage('Checkout') {
+
+        stage('Node Version') {
             steps {
-                echo '📥 Checking out code'
+                sh 'node -v'
+                sh 'npm -v'
             }
         }
 
         stage('Build') {
             steps {
-                echo '🔨 Build stage running'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                echo '🧪 Tests passed'
+                echo 'Running build inside Docker container'
             }
         }
     }
 
     post {
+        success {
+            echo '✅ Docker-based pipeline succeeded'
+        }
         always {
             echo '🧹 Pipeline finished'
         }
