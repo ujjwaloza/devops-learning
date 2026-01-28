@@ -14,12 +14,18 @@ pipeline {
                 sh 'npm -v'
             }
         }
-
+        
         stage('Build') {
             steps {
                 echo 'Running build inside Docker container'
             }
         }
+stage('Docker Build') {
+    steps {
+        sh 'docker build -t devops-ci-demo:latest .'
+    }
+}
+
     }
 
     post {
