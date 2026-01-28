@@ -11,6 +11,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building application'
+                sh 'exit 1'
             }
         }
 
