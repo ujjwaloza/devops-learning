@@ -7,10 +7,19 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') { steps { echo 'Checkout' } }
+
+        stage('Checkout') {
+            steps {
+                echo 'Checkout'
+            }
+        }
 
         stage('Node Info') {
-            agent { docker { image 'node:18-alpine' } }
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                }
+            }
             steps {
                 sh 'node -v'
                 sh 'npm -v'
@@ -43,48 +52,33 @@ pipeline {
         }
 
         stage('Deploy with Docker Compose') {
-    steps {
-        sh '''
-        docker rm -f devops_app || true
-        docker-compose pull
-        docker-compose up -d
-        '''
-    }
-}
-	stage('Verify Deployment') {
-    steps {
-        sh '''
-        echo "⏳ Waiting for container to start..."
-        sleep 5
+            steps {
+                sh '''
+                docker rm -f devops_app || true
+                docker-compose pull
+                docker-compose up -d
+                '''
+            }
+        }
 
-        echo "🔍 Checking container status..."
-        docker ps | grep devops_app
-
-        echo "✅ Deployment verified"
-        '''
-    }
-}
-	stage('Cleanup') {
-    steps {
-        sh 'docker image prune -f'
-    }
-}
-
-
+        stage('Verify Deployment') {
+            steps {
+                sh '''
+                echo "⏳ Waiting for container..."
+                sleep 5
+                docker ps | grep devops_app
+                echo "✅ Deployment verified"
+                '''
+            }
+        }
     }
 
-    stage('Verify Deployment') {
-    steps {
-        sh '''
-        echo "⏳ Waiting for container to start..."
-        sleep 5
-
-        echo "🔍 Checking container status..."
-        docker ps | grep devops_app
-
-        echo "✅ Deployment verified"
-        '''
+    post {
+        success {
+            echo '🚀 Deployment successful'
+        }
+        always {
+            sh 'docker logout'
+        }
     }
-}
-
 }
