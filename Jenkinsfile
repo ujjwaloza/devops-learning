@@ -45,7 +45,7 @@ pipeline {
         stage('Deploy with Docker Compose') {
     steps {
         sh '''
-        docker-compose down || true
+        docker rm -f devops_app || true
         docker-compose pull
         docker-compose up -d
         '''
