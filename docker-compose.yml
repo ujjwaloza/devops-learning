@@ -1,0 +1,7 @@
+version: "3.8"
+
+services:
+  app:
+    image: ujjwaloza/devops-ci-demo:latest
+    container_name: devops_app
+    restart: always
