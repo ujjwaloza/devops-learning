@@ -51,15 +51,40 @@ pipeline {
         '''
     }
 }
+	stage('Verify Deployment') {
+    steps {
+        sh '''
+        echo "⏳ Waiting for container to start..."
+        sleep 5
+
+        echo "🔍 Checking container status..."
+        docker ps | grep devops_app
+
+        echo "✅ Deployment verified"
+        '''
+    }
+}
+	stage('Cleanup') {
+    steps {
+        sh 'docker image prune -f'
+    }
+}
+
 
     }
 
-    post {
-        success {
-            echo '🚀 Deployment successful'
-        }
-        always {
-            sh 'docker logout'
-        }
+    stage('Verify Deployment') {
+    steps {
+        sh '''
+        echo "⏳ Waiting for container to start..."
+        sleep 5
+
+        echo "🔍 Checking container status..."
+        docker ps | grep devops_app
+
+        echo "✅ Deployment verified"
+        '''
     }
+}
+
 }
