@@ -42,16 +42,16 @@ pipeline {
             }
         }
 
-        stage('Deploy Container') {
-            steps {
-                sh '''
-                docker stop devops-ci || true
-                docker rm devops-ci || true
-                docker pull ${IMAGE_NAME}:latest
-                docker run -d --name devops-ci ${IMAGE_NAME}:latest
-                '''
-            }
-        }
+        stage('Deploy with Docker Compose') {
+    steps {
+        sh '''
+        docker compose down || true
+        docker compose pull
+        docker compose up -d
+        '''
+    }
+}
+
     }
 
     post {
