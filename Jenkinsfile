@@ -7,19 +7,10 @@ pipeline {
     }
 
     stages {
-
-        stage('Checkout') {
-            steps {
-                echo '📥 Checking out code'
-            }
-        }
+        stage('Checkout') { steps { echo 'Checkout' } }
 
         stage('Node Info') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                }
-            }
+            agent { docker { image 'node:18-alpine' } }
             steps {
                 sh 'node -v'
                 sh 'npm -v'
@@ -50,15 +41,25 @@ pipeline {
                 sh "docker push ${IMAGE_NAME}:latest"
             }
         }
+
+        stage('Deploy Container') {
+            steps {
+                sh '''
+                docker stop devops-ci || true
+                docker rm devops-ci || true
+                docker pull ${IMAGE_NAME}:latest
+                docker run -d --name devops-ci ${IMAGE_NAME}:latest
+                '''
+            }
+        }
     }
 
     post {
         success {
-            echo '✅ Image pushed to Docker Hub'
+            echo '🚀 Deployment successful'
         }
         always {
             sh 'docker logout'
-            echo '🧹 Pipeline finished'
         }
     }
 }
